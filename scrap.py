@@ -176,6 +176,8 @@ def create_conn():
         port=int(keys[5]))
 
 def send_to_rds(data, conn):
+    if (len(data) < 7):
+        return
     cursor = conn.cursor()
     header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales", "surface_terrain", "longitude", "latitude", "message"]
     header_data = ','.join(header_data)
@@ -194,8 +196,8 @@ def send_to_rds(data, conn):
     print(insert_data)
     sql = "REPLACE INTO predimmo.data(" + header_data + ") VALUES (" + "%s,"*(len(insert_data)-1) + "%s)"
     print(sql)
-    # cursor.execute(sql, tuple(insert_data))
-    # conn.commit()
+    cursor.execute(sql, tuple(insert_data))
+    conn.commit()
 
 
 def get_coord_from_address(code_postal, adresse=None):
@@ -204,7 +206,6 @@ def get_coord_from_address(code_postal, adresse=None):
         url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(adresse) + "&postcode=" + str(code_postal)))
     else:
         url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(code_postal)))
-    print(url)
     r = requests.get(url, headers=headers, data="")
     js = json.loads(r.text)
     x = js['features'][0]['geometry']['coordinates']
@@ -213,5 +214,4 @@ def get_coord_from_address(code_postal, adresse=None):
     pos = []
     pos.append(longitude)
     pos.append(latitude)
-    print(pos)
     return pos
