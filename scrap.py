@@ -90,7 +90,7 @@ def scrap_page(url, date):
     conn = create_conn()
     
     for elm in list_immo:
-        time.sleep(3)
+        time.sleep(5)
         # store all info inside values_col and append to file
         values_col = []
         values_col.append(date)
