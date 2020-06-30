@@ -176,7 +176,7 @@ def create_conn():
         port=int(keys[5]))
 
 def send_to_rds(data, conn):
-    if (len(data) < 7):
+    if (len(data) < 9):
         return
     cursor = conn.cursor()
     header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales","surface_terrain","longitude","latitude","message"]
