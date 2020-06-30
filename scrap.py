@@ -173,11 +173,41 @@ def create_conn():
 
 def send_to_rds(data, conn):
     cursor = conn.cursor()
-    header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales", "surface_terrain", "longitude", "latitude"]
-    sql = "REPLACE INTO predimmo.data(" + header_data + ") VALUES (" + "%s,"*(len(data)-1) + "%s)"
-    cursor.execute(sql, tuple(data))
-    conn.commit()
+    header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales", "surface_terrain", "longitude", "latitude", "message"]
+    header_data = ','.join(header_data)
+    insert_data = []
+    insert_data.append(data[0])
+    insert_data.append(data[5])
+    insert_data.append(data[3])
+    insert_data.append(data[6])
+    insert_data.append(data[7])
+    insert_data.append(data[8])
+    insert_data.append(data[7])
+    pos = get_coord_from_address(data[5])
+    insert_data.append(pos[0])
+    insert_data.append(pos[1])
+    insert_data.append(data[2])
+    print(insert_data)
+    sql = "REPLACE INTO predimmo.data(" + header_data + ") VALUES (" + "%s,"*(len(insert_data)-1) + "%s)"
+    print(sql)
+    # cursor.execute(sql, tuple(insert_data))
+    # conn.commit()
 
 
-
-
+def get_coord_from_address(code_postal, adresse=None):
+    headers = {"Content-Type": "application/json"}
+    if adresse != None:
+        url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(adresse) + "&postcode=" + str(code_postal)))
+    else:
+        url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(code_postal)))
+    print(url)
+    r = requests.get(url, headers=headers, data="")
+    js = json.loads(r.text)
+    x = js['features'][0]['geometry']['coordinates']
+    longitude = x[0]
+    latitude = x[1]
+    pos = []
+    pos.append(longitude)
+    pos.append(latitude)
+    print(pos)
+    return pos
