@@ -99,6 +99,9 @@ def scrap_page(url, date):
         print(build_url)
         header = random.choice(headers)
         response_immo = requests.get(build_url, headers=header)
+        if (response_immo.status_code != 200):
+            print(response_immo.status_code)
+            continue
         soup_immo = BeautifulSoup(response_immo.text, 'html.parser')
 
         # Description
