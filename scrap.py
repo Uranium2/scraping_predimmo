@@ -71,7 +71,8 @@ def append_list_as_row(file_path, l):
         csv_writer.writerow(l)
 
 def scrap_page(url, date):
-    response = requests.get(url, headers=random.choice(headers))
+    header = random.choice(headers)
+    response = requests.get(url, headers=header)
     print(url)
     if (response.status_code != 200):
         print(response.status_code)
