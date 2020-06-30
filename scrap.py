@@ -147,7 +147,7 @@ def scrap_page(url, date):
                 values_col.append(div.findNext("p").text)
 
         # Writte to csv
-        append_list_as_row("data\\{}.csv".format(date), values_col)
+        append_list_as_row("data/{}.csv".format(date), values_col)
 
 
 
