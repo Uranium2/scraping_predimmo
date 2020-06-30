@@ -179,7 +179,7 @@ def send_to_rds(data, conn):
     if (len(data) < 7):
         return
     cursor = conn.cursor()
-    header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales", "surface_terrain", "longitude", "latitude", "message"]
+    header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales","surface_terrain","longitude","latitude","message"]
     header_data = ','.join(header_data)
     insert_data = []
     insert_data.append(data[0])
@@ -194,7 +194,7 @@ def send_to_rds(data, conn):
     insert_data.append(pos[1])
     insert_data.append(data[2])
     print(insert_data)
-    sql = "REPLACE INTO predimmo.data(" + header_data + ") VALUES (" + "%s,"*(len(insert_data)-1) + "%s)"
+    sql = "REPLACE INTO predimmo.data_django(" + header_data + ") VALUES (" + "%s,"*(len(insert_data)-1) + "%s)"
     print(sql)
     cursor.execute(sql, tuple(insert_data))
     conn.commit()
