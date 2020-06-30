@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 import time
 import random
+import pymysql
 
 # !pip install fake-useragent
 
@@ -20,7 +21,6 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 6P Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.83 Mobile Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 7.1.1; G8231 Build/41.2.A.0.219; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/59.0.3071.125 Mobile Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0.1; E6653 Build/32.2.A.0.253) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.36'},
-
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; HTC One X10 Build/MRA58K; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; HTC One M9 Build/MRA58K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.3'},
 {'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1'},
@@ -40,7 +40,6 @@ headers = [{'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; SM-T827R4 Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0.2; SAMSUNG SM-T550 Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/3.3 Chrome/38.0.2125.102 Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4.3; KFTHWI Build/KTU84M) AppleWebKit/537.36 (KHTML, like Gecko) Silk/47.1.79 like Chrome/47.0.2526.80 Safari/537.36'},
-
 {'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0.2; LG-V410/V41020c Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/34.0.1847.118 Safari/537.36'},
 {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246'},
 {'User-Agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36'},
@@ -86,6 +85,8 @@ def scrap_page(url, date):
 
     list_immo = [x for x in list_immo if "ventes_immobilieres" in x]
     list_immo = [x for x in list_immo if not "offres" in x]
+
+    conn = create_conn()
     
     for elm in list_immo:
         time.sleep(3)
@@ -147,21 +148,35 @@ def scrap_page(url, date):
                 values_col.append(div.findNext("p").text)
 
         # Writte to csv
+        send_to_rds(values_col, conn)
         append_list_as_row("data/{}.csv".format(date), values_col)
 
 
 
-
-date = datetime.now().strftime("%Y-%m-%d")
-size = 100
-for i in range(2, size):
-    scrap_page(url_page.format(i), date)
-    print(str(i) + " / " + str(size))
-
-
+def run_scrapping():
+    date = datetime.now().strftime("%Y-%m-%d")
+    size = 100
+    for i in range(2, size):
+        scrap_page(url_page.format(i), date)
+        print(str(i) + " / " + str(size))
 
 
+def create_conn():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    f = open(os.path.join(dir_path, "aws_keys"), "r")
+    keys = f.read().split("\n")
+    return pymysql.connect(
+        host= keys[2],
+        user=keys[3],
+        password=keys[4],
+        port=int(keys[5]))
 
+def send_to_rds(data, conn):
+    cursor = conn.cursor()
+    header_data = ["date_mutation", "code_postal", "valeur_fonciere", "code_type_local", "surface_reelle_bati", "nombre_pieces_principales", "surface_terrain", "longitude", "latitude"]
+    sql = "REPLACE INTO predimmo.data(" + header_data + ") VALUES (" + "%s,"*(len(data)-1) + "%s)"
+    cursor.execute(sql, tuple(data))
+    conn.commit()
 
 
 
