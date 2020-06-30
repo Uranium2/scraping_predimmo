@@ -76,7 +76,6 @@ def scrap_page(url, date):
     print(url)
     if (response.status_code != 200):
         print(response.status_code)
-        exit()
         return
     soup = BeautifulSoup(response.text, 'html.parser')
 
@@ -95,6 +94,7 @@ def scrap_page(url, date):
         values_col.append(date)
 
         build_url = url_ref + elm
+        print(build_url)
         header = random.choice(headers)
         response_immo = requests.get(build_url, headers=header)
         soup_immo = BeautifulSoup(response_immo.text, 'html.parser')
