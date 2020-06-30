@@ -95,8 +95,8 @@ def scrap_page(url, date):
         values_col.append(date)
 
         build_url = url_ref + elm
-
-        response_immo = requests.get(build_url, headers=headers)
+        header = random.choice(headers)
+        response_immo = requests.get(build_url, headers=header)
         soup_immo = BeautifulSoup(response_immo.text, 'html.parser')
 
         # Description
