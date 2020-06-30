@@ -89,7 +89,9 @@ def scrap_page(url, date):
     list_immo = [x for x in list_immo if not "offres" in x]
 
     conn = create_conn()
-    
+
+    random.shuffle(list_immo)
+
     for elm in list_immo:
         time.sleep(5)
         # store all info inside values_col and append to file
@@ -160,7 +162,9 @@ def scrap_page(url, date):
 def run_scrapping():
     date = datetime.now().strftime("%Y-%m-%d")
     size = 100
-    for i in range(2, size):
+    r = list(range(size))
+    random.shuffle(r)
+    for i in range(2, r):
         scrap_page(url_page.format(i), date)
         print(str(i) + " / " + str(size))
 
