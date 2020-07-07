@@ -180,7 +180,7 @@ def run_scrapping():
     size = 100
     r = list(range(size))
     random.shuffle(r)
-    for i in range(2, r):
+    for i in r:
         scrap_page(url_page.format(i), date)
         print(str(i) + " / " + str(size))
 
