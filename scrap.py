@@ -13,10 +13,10 @@ from fake_headers import Headers
 
 
 url_ref = "https://www.leboncoin.fr"
-url = "https://www.leboncoin.fr/recherche/?category=8&locations=Paris__48.85790400439862_2.358842071208555_10000"
+url = "https://www.leboncoin.fr/ventes_immobilieres/offres/ile_de_france/paris/"
 
 header = Headers(headers=True)
-url_page = "https://www.leboncoin.fr/recherche/?category=8&locations=Paris__48.85790400439862_2.358842071208555_10000/p-{}/"
+url_page = "https://www.leboncoin.fr/ventes_immobilieres/offres/ile_de_france/paris/p-{}/"
 
 
 
