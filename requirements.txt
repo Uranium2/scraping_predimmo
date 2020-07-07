@@ -4,3 +4,4 @@ requests==2.24.0
 beautifulsoup4==4.9.1
 pandas==1.0.5
 fake-headers==1.0.2
+http-request-randomizer==1.2.3
