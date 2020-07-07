@@ -189,29 +189,31 @@ def send_to_rds(data, conn):
 
 
 def get_coord_from_address(code_postal, adresse=None):
-    """ Get longitude and latitude from an address.
+    """Get coordinate from an address
 
     Args:
-        code_postal [String]: Get zip code.
-        adresse [String] (optional): Get address (Defaults to None).
+        code_postal (Int): Postal code of a city
+        adresse (String, optional): The adresse of a house. Defaults to None.
 
     Returns:
-        pos [List]: This is a list of longitude and latitude.
+        pos (List(Int, Int)): Give a list that holds X and Y coordinates of the given adress, else the adresse of Paris
     """
     headers = {"Content-Type": "application/json"}
     if adresse != None:
         url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(adresse) + "&postcode=" + str(code_postal)))
     else:
         url = str(("http://api-adresse.data.gouv.fr/search/?q=" + str(code_postal)))
-
-    r = requests.get(url, headers=header.generate(), data="")
+    print(url)
+    r = requests.get(url, headers=headers, data="")
     js = json.loads(r.text)
-    x = js['features'][0]['geometry']['coordinates']
+    if code_postal == 75001:
+        x = js['features'][1]['geometry']['coordinates']
+    else:
+        	x = js['features'][0]['geometry']['coordinates']
     longitude = x[0]
     latitude = x[1]
-    
     pos = []
     pos.append(longitude)
     pos.append(latitude)
-
+    print(pos)
     return pos
