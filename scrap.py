@@ -66,7 +66,7 @@ def scrap_page(url, date):
     random.shuffle(list_immo)
 
     for elm in list_immo:
-        time.sleep(50)
+        time.sleep(random.randint(5, 15))
 
         # Store all info inside values_col and append to file
         values_col = []
